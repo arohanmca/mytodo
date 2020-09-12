@@ -1,4 +1,4 @@
-package com.todo.todoapp.beans;
+package com.todo.mytodo.beans;
 
 public class HelloWorldBean {
 

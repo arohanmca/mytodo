@@ -1,4 +1,4 @@
-package com.todo.todoapp.user;
+package com.todo.mytodo.user;
 
 import java.util.ArrayList;
 import java.util.Date;

@@ -1,4 +1,4 @@
-package com.todo.todoapp.user;
+package com.todo.mytodo.user;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;

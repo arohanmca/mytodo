@@ -1,4 +1,4 @@
-package com.todo.todoapp.versioning;
+package com.todo.mytodo.versioning;
 
 public class PersonV2 {
 	private Name name;
