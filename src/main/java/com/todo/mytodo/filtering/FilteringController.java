@@ -1,4 +1,4 @@
-package com.todo.todoapp.filtering;
+package com.todo.mytodo.filtering;
 
 import java.util.Arrays;
 import java.util.HashSet;

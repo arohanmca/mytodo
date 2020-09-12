@@ -1,4 +1,4 @@
-package com.todo.todoapp.exception;
+package com.todo.mytodo.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

@@ -1,4 +1,4 @@
-package com.todo.todoapp.versioning;
+package com.todo.mytodo.versioning;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;

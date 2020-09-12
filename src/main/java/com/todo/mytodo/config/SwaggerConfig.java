@@ -1,4 +1,4 @@
-package com.todo.todoapp.config;
+package com.todo.mytodo.config;
 
 import java.util.ArrayList;
 

@@ -1,10 +1,9 @@
-package com.todo.todoapp.controller;
+package com.todo.mytodo.controller;
 
 import java.net.URI;
 
 
 import java.util.List;
-import java.util.Optional;
 
 import javax.validation.Valid;
 
@@ -21,11 +20,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.todo.todoapp.exception.UserNotFoundException;
-import com.todo.todoapp.repository.PostRepository;
-import com.todo.todoapp.repository.UserRepository;
-import com.todo.todoapp.user.Post;
-import com.todo.todoapp.user.User;
+import com.todo.mytodo.exception.UserNotFoundException;
+import com.todo.mytodo.user.User;
+import com.todo.mytodo.user.UserDaoService;
 
 //import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 //import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -34,35 +31,62 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 @RestController
-public class UserJpaController {
+public class UserController {
 	
 	@Autowired
-	private UserRepository userRepository;
+	private UserDaoService userDaoService;
 	
-	@Autowired
-	PostRepository postRepository;
-	
-	@GetMapping("/jpa/users")
+	// GET/users
+	// retrieveAllUsers
+	@GetMapping("/users")
 	public List<User> retrieveAllUsers() {
-		return userRepository.findAll(); 
+		return userDaoService.findAll(); 
 	}
-		
-	@GetMapping("/jpa/users/{id}")
-	public Resource<User> retrieveUser(@PathVariable int id) {
-		Optional<User> findOneUser = userRepository.findById(id); //userDaoService.findOne(id);
+	
+	// GET /user/{id}
+	// retrieveUser(int id)
+	/*@GetMapping("/users/{id}")
+	public User retrieveUser(@PathVariable int id) {
+		User findOneUser = userDaoService.findOne(id);
 		// HATEOAS - import Hateoas Resouce for this 
-		if(!findOneUser.isPresent() ) {
+		if(findOneUser == null) {
 			throw new UserNotFoundException("id - "+id);
 		} 
-		Resource<User> resource = new Resource<User>(findOneUser.get());
+		return findOneUser;
+	}*/
+	
+	// HATEOAS - Hypermedia As The Engine Of Application State
+//	@GetMapping("/users/{id}")
+//	public EntityModel<User> retrieveUser(@PathVariable int id) {
+//		User findOneUser = userDaoService.findOne(id);
+//		// HATEOAS - import Hateoas Resouce for this 
+//		if(findOneUser == null) {
+//			throw new UserNotFoundException("id - "+id);
+//		}
+//		EntityModel<User> resource = new EntityModel<User>(findOneUser); 
+//		Link link = linkTo(methodOn(UserController.class)
+//				.retrieveAllUsers())
+//				.withRel("All users");
+//		resource.add(link);
+//		return resource;
+//	}
+	
+	@GetMapping("/users/{id}")
+	public Resource<User> retrieveUser(@PathVariable int id) {
+		User findOneUser = userDaoService.findOne(id);
+		// HATEOAS - import Hateoas Resouce for this 
+		if(findOneUser == null) {
+			throw new UserNotFoundException("id - "+id);
+		} 
+		Resource<User> resource = new Resource<User>(findOneUser);
 		ControllerLinkBuilder linkTo = linkTo(methodOn(this.getClass()).retrieveAllUsers());
 		resource.add(linkTo.withRel("All Users"));
 		return resource;
 	}
 	
-	@PostMapping("/jpa/users")
+	@PostMapping("/users")
 	public ResponseEntity<Object> createUser(@Valid @RequestBody User user) {
-		User savedUser = userRepository.save(user);   //userDaoService.save(user);
+		User savedUser = userDaoService.save(user);
 		 
 		URI location = ServletUriComponentsBuilder
 			.fromCurrentRequest()
@@ -73,39 +97,12 @@ public class UserJpaController {
 		return ResponseEntity.created(location).build();
 	}
 	
-	@DeleteMapping("/jpa/users/{id}")
+	@DeleteMapping("/users/{id}")
 	public void deleteUser(@PathVariable int id) {
-		userRepository.deleteById(id); //userDaoService.deleteById(id);
+		User deletedUser = userDaoService.deleteById(id);
+		if(deletedUser == null) {
+			throw new UserNotFoundException("id - "+id);
+		}
 	}
 	
-	@GetMapping("/jpa/users/{id}/posts")
-	public List<Post> retrieveAllUsersPost(@PathVariable int id) {
-		Optional<User> userOptional = userRepository.findById(id);
-
-		if(!userOptional.isPresent() ) {
-			throw new UserNotFoundException("id -> "+id);
-		} 
-		return userOptional.get().getPost(); 
-	}
-	
-	@PostMapping("/jpa/users/{id}/posts")
-	public ResponseEntity<Object> createPost(@PathVariable int id, @RequestBody Post post) {
-		Optional<User> userOptional = userRepository.findById(id);
-
-		if(!userOptional.isPresent() ) {
-			throw new UserNotFoundException("id -> "+id);
-		} 
-		User user = userOptional.get();
-		post.setUser(user);
-		postRepository.save(post);
-		
-		URI location = ServletUriComponentsBuilder
-			.fromCurrentRequest()
-			.path("/{id}")
-			.buildAndExpand(post.getId())
-			.toUri();
-		
-		return ResponseEntity.created(location).build();
-	}
-	
-}	
+}
